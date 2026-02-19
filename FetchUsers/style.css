@@ -1,0 +1,15 @@
+.container {
+    width: 30rem;
+    margin: auto;
+}
+
+.label {
+    width: 12rem;
+    margin: auto;
+}
+
+#userList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: 35rem;
+}
