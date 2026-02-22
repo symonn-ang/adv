@@ -3,6 +3,7 @@ import React from 'react';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
@@ -29,7 +30,8 @@ export default function TabLayout() {
         name="contact"
         options={{
           title: 'Contact Us',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          tabBarIcon: ({ color }) => <Ionicons name="people-circle-sharp" size={24} color={color} />,
+          // <IconSymbol size={28} name="paperplane.fill" color={color}
         }}
       />
     </Tabs>
