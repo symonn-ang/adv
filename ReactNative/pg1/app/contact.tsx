@@ -31,7 +31,7 @@ const explore = () => {
             resizeMode='cover'
             style={styles.image} />
 
-          <Text style={styles.text}>bullet train</Text>
+          <Text style={styles.text}>bradds pit</Text>
           <Image source={yep10}
             resizeMode='cover'
             style={styles.image} />
@@ -42,15 +42,17 @@ const explore = () => {
             style={styles.image} />
           {/* onPress={() => console.log("Pressed!")} */}
           {/* link can be asChild  */}
-          <Link href="/" style={{ marginHorizontal: 'auto' }} > 
+          <Link href="/" asChild>
             <Pressable
-              style={({ pressed, hovered }) => [
-                styles.button,           // static styles
-                {
-                  opacity: pressed ? 0.5 : 1,
-                  backgroundColor: hovered ? 'blue' : styles.button.backgroundColor
-                } // dynamic pressed state
-              ]}>
+              style={styles.button}
+            // style={({ pressed, hovered }) => [
+            //   styles.button,           // static styles
+            //   {
+            //     opacity: pressed ? 0.5 : 1,
+            //     backgroundColor: hovered ? 'blue' : '#000000b3'
+            //   } // dynamic pressed state
+            // ]}
+            >
               <Text style={styles.buttonText}>
                 Go to Home
               </Text>

@@ -23,6 +23,14 @@ const index = () => {
 
           </Pressable>
         </Link>
+        <Link href="/menu" style={{ marginHorizontal: 'auto' }} asChild>
+          <Pressable style={styles.button}>
+            <Text style={styles.buttonText}>
+              Browse Movies
+            </Text>
+
+          </Pressable>
+        </Link>
 
       </ImageBackground>
     </View>
@@ -69,15 +77,17 @@ const styles = StyleSheet.create({
   },
 
   button: {
+    width: 200,
     height: 60,
     borderRadius: 10,
     justifyContent: 'center',
     backgroundColor: '#000000b3',
     padding: 6,
+    marginBottom: 50,
   },
 
   buttonText: {
-    color: 'red',
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
