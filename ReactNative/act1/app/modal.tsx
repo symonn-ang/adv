@@ -1,16 +1,26 @@
 import { Link } from 'expo-router';
-import { StyleSheet } from 'react-native';
-
+import { StyleSheet, Alert, View } from 'react-native';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Button } from '@react-navigation/elements';
+import { useRouter } from "expo-router";
 
 export default function ModalScreen() {
+  const router = useRouter();
+
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="title">This is a modal</ThemedText>
-      <Link href="/" dismissTo style={styles.link}>
-        <ThemedText type="link">Go to home screen</ThemedText>
-      </Link>
+      <View style={styles.closeModal}>
+
+        <AntDesign name="close-circle" size={24} color="black"
+          onPress={() => {
+            Alert.alert("Closing Modal...")
+            router.push("/")
+          }}
+        />
+      </View>
     </ThemedView>
   );
 }
@@ -18,12 +28,13 @@ export default function ModalScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    alignSelf: 'center',
     padding: 20,
   },
-  link: {
-    marginTop: 15,
+  closeModal: {
+    marginLeft: 20,
     paddingVertical: 15,
   },
 });
