@@ -3,18 +3,10 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import Entypo from '@expo/vector-icons/Entypo';
-import { useState, useEffect } from 'react';
 
 export default function Profile() {
   const router = useRouter();
   const { email } = useLocalSearchParams();
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      router.replace("/");
-    }
-  }, [isLoggedIn]);
 
   const backBtn = () => {
     router.back()

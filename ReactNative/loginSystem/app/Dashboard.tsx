@@ -6,14 +6,16 @@ import { useState, useEffect } from 'react';
 
 export default function Dashboard() {
   const router = useRouter();
-  const { email } = useLocalSearchParams();
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const { email, isLoggedIn } = useLocalSearchParams();
+  const [LoggedIn, setIsLoggedIn] = useState(isLoggedIn === 'true');
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      router.replace("/");
+    if (!LoggedIn) {
+      setTimeout(() => {
+        router.replace('/');
+      }, 0);
     }
-  }, [isLoggedIn]);
+  }, [LoggedIn]);
 
   const profileBtn = () => {
     router.push({
@@ -34,7 +36,7 @@ export default function Dashboard() {
       <Text style={styles.labelText}>
         Welcome!
       </Text>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Fontisto name="email" size={24} color="black" style={styles.icon} />
         <Text>{email}</Text>
       </View>

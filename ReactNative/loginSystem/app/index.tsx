@@ -19,7 +19,7 @@ export default function Login() {
       setIsLoggedIn(true);
       router.replace({
         pathname: '/Dashboard',
-        params: {email}
+        params: {email, isLoggedIn: 'true'}
       });
     } else {
       setValidator('Please Enter Valid Email & Password')
