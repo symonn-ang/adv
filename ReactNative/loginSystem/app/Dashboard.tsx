@@ -4,7 +4,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import { useState, useEffect } from 'react';
 
-export default function Login() {
+export default function Dashboard() {
   const router = useRouter();
   const { email } = useLocalSearchParams();
   const [isLoggedIn, setIsLoggedIn] = useState(true);

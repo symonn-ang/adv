@@ -5,7 +5,7 @@ import Fontisto from '@expo/vector-icons/Fontisto';
 import Entypo from '@expo/vector-icons/Entypo';
 import { useState, useEffect } from 'react';
 
-export default function Login() {
+export default function Profile() {
   const router = useRouter();
   const { email } = useLocalSearchParams();
   const [isLoggedIn, setIsLoggedIn] = useState(true);
