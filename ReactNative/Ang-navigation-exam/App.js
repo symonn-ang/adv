@@ -13,7 +13,7 @@ const HomeStack = createNativeStackNavigator();
 function HomeStackNavigator() {
   return (
     <HomeStack.Navigator>
-      <HomeStack.Screen name="Login" component={LoginScreen} />
+      <HomeStack.Screen name="LoginStack" component={LoginScreen} />
       <HomeStack.Screen name="Register" component={RegisterScreen} />
       <HomeStack.Screen name="Home" component={HomeScreen} />
       <HomeStack.Screen name="Profile" component={ProfileScreen} />
@@ -25,7 +25,7 @@ function HomeStackNavigator() {
 export default function App() {
   return (
     <NavigationContainer>
-      <RootTab.Navigator screenOptions={{ headerShown: false }}>
+      <RootTab.Navigator screenOptions={{ headerShown: false, tabBarStyle: {display:"none"} }}>
         <RootTab.Screen name="Login" component={HomeStackNavigator} />
       </RootTab.Navigator>
     </NavigationContainer>

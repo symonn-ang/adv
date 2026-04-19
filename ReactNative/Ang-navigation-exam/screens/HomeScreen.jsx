@@ -1,28 +1,35 @@
-import { StyleSheet, Text, View, Button, Image } from "react-native";
+import { StyleSheet, Text, View, Button, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import rockImage from "../assets/the-rock-turtleneck.avif"
+import { auth } from "../firebase/firebaseConfig";
 
 export default function HomeScreen() {
     const navigation = useNavigation();
 
+    const currentUser = auth.currentUser
     return (
         <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Welcome Home</Text>
+            <Text style={{fontWeight:"bold", marginBottom: 10, fontSize: 20}}>{currentUser?.email?.split("@")[0]}!</Text>
             <Image source={rockImage}
-                style={{ width: 200, height: 200 }} />
+                style={styles.image} />
             <View style={{ marginTop: 10, }}></View>
 
-            <Button
-                title="Go to Profile"
-                onPress={() => navigation.navigate("Profile")}
-            />
+                <TouchableOpacity
+                    style={styles.btn}
+                    onPress={() => navigation.navigate("Profile")}
+                >
+                    <Text style={{ color: "#fff", fontWeight: "bold" }}>Visit Profile</Text>
+                </TouchableOpacity>
             <View style={{ marginTop: 10, }}></View>
-            <Button
-                title="Log Out"
-                onPress={() => navigation.popToTop()}
-            />
+            <TouchableOpacity
+                    style={styles.btn}
+                    onPress={() => navigation.popToTop()}
+                >
+                    <Text style={{ color: "#fff", fontWeight: "bold" }}>Log Out</Text>
+                </TouchableOpacity>
         </SafeAreaView>
     );
 }
@@ -38,5 +45,20 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: "bold",
         color: "#333",
+    },
+    image: {
+        width: 200,
+        height: 200,
+        borderWidth: 2,
+        borderRadius: 100,
+    },  
+        btn: {
+        width: 100,
+        padding: 10,
+        backgroundColor: "#b777c7",
+        alignItems: "center",
+        borderColor: "#000",
+        borderWidth: 2,
+        borderRadius: 10,
     },
 });
