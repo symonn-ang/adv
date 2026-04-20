@@ -4,23 +4,25 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import Entypo from '@expo/vector-icons/Entypo';
+import { auth, db } from "../firebase/firebaseConfig";
 
 import icon from "../assets/ic_profile.png"
 
 export default function ProfileScreen() {
     const navigation = useNavigation();
+    const currentUser = auth.currentUser
 
     return (
         <SafeAreaView style={{ backgroundColor: "#f4f1e7", flex: 1 }}>
             <View style={styles.container}>
                 <Image source={icon}
                     style={styles.pic} />
-                <Text style={styles.title}>Emma Watson</Text>
+                <Text style={styles.title}>{currentUser?.email?.split("@")[0]}</Text>
 
 
                 <View style={{ flexDirection: 'row' }}>
                     <Fontisto name="email" size={24} color="black" style={styles.icon} />
-                    <Text style={{ paddingLeft: 10 }}>emmawatson@gmail.com</Text>
+                    <Text style={{ paddingLeft: 10 }}>{currentUser.email}</Text>
                 </View>
 
                 <View style={{ flexDirection: 'row' }}>
@@ -38,7 +40,7 @@ export default function ProfileScreen() {
                     style={styles.btn}
                     onPress={() => navigation.goBack()}
                 >
-                    <Text style={{ color: "#fff", fontWeight: "bold"  }}>Back to Home</Text>
+                    <Text style={{ color: "#fff", fontWeight: "bold" }}>Back to Home</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

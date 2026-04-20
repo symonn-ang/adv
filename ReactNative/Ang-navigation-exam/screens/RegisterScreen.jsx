@@ -2,8 +2,9 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from "reac
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
-import { auth } from "../firebase/firebaseConfig";
+import { auth, db } from "../firebase/firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 
 export default function RegisterScreen() {
     const navigation = useNavigation();
@@ -11,6 +12,7 @@ export default function RegisterScreen() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+
 
     async function handleRegister() {
         if (!email || !password || !confirmPassword) {
@@ -27,7 +29,14 @@ export default function RegisterScreen() {
         }
         else {
             try {
-                await createUserWithEmailAndPassword(auth, email, password)
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                await setDoc(doc(db, "users", user.uid), {
+                    email: user.email,
+                    createdAt: new Date(),
+                });
+
                 Alert.alert("Success", "Account Created!");
                 navigation.popToTop()
             } catch (error) {
