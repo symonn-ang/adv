@@ -5,17 +5,28 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import rockImage from "../assets/the-rock-turtleneck.avif"
 import { auth, db } from "../firebase/firebaseConfig";
 import { useEffect, useState } from "react";
-import { getDoc, doc } from "firebase/firestore";
+import { getDoc, doc, collection, query, where, onSnapshot, orderBy } from "firebase/firestore";
 
 import Posts from "../components/Posts"
 import PostFeed from "../components/PostFeed"
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function HomeScreen() {
     const navigation = useNavigation();
-    const currentUser = auth.currentUser
-
+    const [currentUser, setCurrentUser] = useState(null);
+    const [posts, setPosts] = useState([]);
     const [userData, setUserData] = useState(null);
 
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            console.log("Auth user:", user?.uid);
+            setCurrentUser(user);
+        });
+
+        return unsubscribe;
+    }, []);
+
+    // assignment 5 useeffect
     useEffect(() => {
         async function fetchUserData() {
             if (currentUser) {
@@ -30,6 +41,31 @@ export default function HomeScreen() {
         fetchUserData();
     }, [currentUser])
 
+    useEffect(() => {
+        if (!currentUser) return;
+
+        const q = query(
+            collection(db, "posts"),
+            where("userId", "==", currentUser.uid),
+            orderBy("createdAt", "desc")
+        );
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            console.log("Docs:", snapshot.docs.length);
+            const postList = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+
+            setPosts(postList);
+        },
+            (error) => {
+                console.log("Firestore error:", error); // 👈 ADD THIS
+            });
+
+        return unsubscribe;
+    }, [currentUser]);
+    
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
@@ -66,7 +102,9 @@ export default function HomeScreen() {
                     </View>
 
                     <PostFeed />
-                    <Posts />
+                    {posts.map((item) => (
+                        <Posts key={item.id} post={item} />
+                    ))}
                 </View>
             </ScrollView>
         </SafeAreaView>

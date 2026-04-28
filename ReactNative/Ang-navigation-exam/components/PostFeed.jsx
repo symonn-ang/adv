@@ -6,10 +6,34 @@ import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { auth, db } from "../firebase/firebaseConfig";
+
 const PostFeed = () => {
 
     const [post, setPost] = useState("");
+    const handlePost = async () => {
+        const user = auth.currentUser;
 
+        if (!post.trim()) {
+            Alert.alert("Empty post");
+            return;
+        }
+
+        try {
+            await addDoc(collection(db, "posts"), {
+                text: post,
+                createdAt: serverTimestamp(),
+                userId: user.uid,
+                userEmail: user.email,
+            });
+
+            setPost("");
+            Alert.alert("Posted!");
+        } catch (error) {
+            console.log(error);
+        }
+    };
     return (
         <View style={styles.container}>
 
@@ -32,7 +56,7 @@ const PostFeed = () => {
 
                 <TouchableOpacity
                     style={styles.btn}
-                    onPress={() => navigation.popToTop()}
+                    onPress={handlePost}
                 >
                     <Text style={{ color: "#fff", fontWeight: "bold" }}>Post</Text>
                 </TouchableOpacity>
@@ -51,7 +75,8 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: "#000",
         borderRadius: 10,
-        width: "90%"
+        width: "90%",
+        marginBottom: 10,
     },
     subSection: {
         flexDirection: "row",
@@ -60,6 +85,8 @@ const styles = StyleSheet.create({
         width: "100%",
         borderColor: "#000",
         borderWidth: 2,
+        borderEndStartRadius: 8,
+        borderEndEndRadius: 8,
     },
 
     box: {
@@ -85,7 +112,7 @@ const styles = StyleSheet.create({
     btn: {
         width: 105,
         padding: 10,
-        borderEndEndRadius: 3,
+        borderEndEndRadius: 4,
         backgroundColor: "#b777c7",
         alignItems: "center",
         alignSelf: "center",
