@@ -71,7 +71,7 @@ const Posts = ({ post }) => {
 
       <View style={styles.rightSection}>
         <View style={styles.topSection}>
-          <Text style={{ fontWeight: "bold" }}>{currentUser?.email?.split("@")[0]}</Text>
+          <Text style={{ fontWeight: "bold" }}>{post.userEmail?.split("@")[0]}</Text>
           <Text style={{ color: "#818181", marginLeft: 6 }}>{post.userEmail}</Text>
           <Text style={{ marginLeft: 60, }}>{date}</Text>
         </View>

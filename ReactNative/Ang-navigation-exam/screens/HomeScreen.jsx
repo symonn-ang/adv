@@ -60,7 +60,7 @@ export default function HomeScreen() {
             setPosts(postList);
         },
             (error) => {
-                console.log("Firestore error:", error); // 👈 ADD THIS
+                console.log("Firestore error:", error);
             });
 
         return unsubscribe;

@@ -19,6 +19,8 @@ export default function LoginScreen() {
         else {
             try {
                 await signInWithEmailAndPassword(auth, email, password)
+                setEmail("")
+                setPassword("")
                 navigation.navigate("Home")
             } catch (error) {
                 Alert.alert("Login Failed", error.message)
