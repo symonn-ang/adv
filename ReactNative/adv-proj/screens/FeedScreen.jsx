@@ -11,7 +11,7 @@ import Posts from "../components/Posts"
 import PostFeed from "../components/PostFeed"
 import { onAuthStateChanged } from "firebase/auth";
 
-export default function HomeScreen() {
+export default function FeedScreen() {
     const navigation = useNavigation();
     const [currentUser, setCurrentUser] = useState(null);
     const [posts, setPosts] = useState([]);
@@ -46,7 +46,7 @@ export default function HomeScreen() {
 
         const q = query(
             collection(db, "posts"),
-            where("userId", "==", currentUser.uid),
+            // where("userId", "==", currentUser.uid),
             orderBy("createdAt", "desc")
         );
 
@@ -70,40 +70,8 @@ export default function HomeScreen() {
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
 
-                <TouchableOpacity
-                    style={styles.btn}
-                    onPress={() => navigation.popToTop()}
-                >
-                    <Text style={{ color: "#fff", fontWeight: "bold" }}>Log Out</Text>
-                </TouchableOpacity>
-
                 <View style={{ alignItems: "center" }}>
-                    <Text style={styles.title}>Welcome Home</Text>
-                    <Text style={{ fontWeight: "bold", fontSize: 20 }}>{currentUser?.email?.split("@")[0]}!</Text>
-                    <Text>  Created at: {userData?.createdAt
-                        ? userData.createdAt.toDate().toLocaleDateString()
-                        : "Loading..."}</Text>
-                    <View style={styles.heroSection}>
-                        <Image source={rockImage}
-                            style={styles.image} />
-                        <View style={{ marginTop: 10, }}></View>
-
-                        <View style={styles.subSection}>
-                            <TouchableOpacity
-                                style={styles.btn}
-                                onPress={() => navigation.navigate("Profile")}
-                            >
-                                <Text style={{ color: "#fff", fontWeight: "bold" }}>Visit Profile</Text>
-                            </TouchableOpacity>
-                            <View style={{ marginTop: 10 }}></View>
-                            <TouchableOpacity
-                                style={styles.btn}
-                                onPress={() => navigation.popToTop()}
-                            >
-                                <Text style={{ color: "#fff", fontWeight: "bold" }}>Log Out</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
+                    <Text style={styles.title}>Home</Text>
 
                     <View>
                         <Text style={{ fontWeight: "bold", fontSize: 20, marginTop: 20, }}>Today's Blog~</Text>

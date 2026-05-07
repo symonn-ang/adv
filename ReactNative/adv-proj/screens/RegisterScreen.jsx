@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Image } from "react-native";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Image, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
@@ -11,6 +11,7 @@ import logo from "../assets/logo.png"
 export default function RegisterScreen() {
     const navigation = useNavigation();
 
+    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -49,44 +50,71 @@ export default function RegisterScreen() {
 
     return (
         <SafeAreaView style={{ backgroundColor: "#f5f7fb", flex: 1 }}>
-            <View style={styles.container}>
-                <Image source={logo}
-                    style={styles.image} />
-                <Text style={styles.title}>Create your account</Text>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+            >
+                <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+                    <View style={styles.container}>
+                        <Image source={logo}
+                            style={styles.image} />
+                        <Text style={styles.title}>Create your account</Text>
 
-                <TextInput
-                    value={email}
-                    onChangeText={setEmail}
-                    style={styles.box}
-                    placeholder="Enter Email Address.."
-                    placeholderTextColor="#919191"
-                />
+                        <TextInput
+                            value={username}
+                            onChangeText={setUsername}
+                            style={styles.box}
+                            placeholder="Enter Username.."
+                            placeholderTextColor="#919191"
+                        />
+                        <TextInput
+                            value={email}
+                            onChangeText={setEmail}
+                            style={styles.box}
+                            placeholder="Enter Email Address.."
+                            placeholderTextColor="#919191"
+                        />
 
-                <TextInput
-                    value={password}
-                    onChangeText={setPassword}
-                    style={styles.box}
-                    placeholder="Enter Password.."
-                    placeholderTextColor="#919191"
-                    secureTextEntry
-                />
+                        <TextInput
+                            value={password}
+                            onChangeText={setPassword}
+                            style={styles.box}
+                            placeholder="Enter Password.."
+                            placeholderTextColor="#919191"
+                            secureTextEntry
+                        />
 
-                <TextInput
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    style={styles.box}
-                    placeholder="Confirm Password.."
-                    placeholderTextColor="#919191"
-                    secureTextEntry
-                />
+                        <TextInput
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
+                            style={styles.box}
+                            placeholder="Confirm Password.."
+                            placeholderTextColor="#919191"
+                            secureTextEntry
+                        />
 
-                <TouchableOpacity
-                    style={styles.btn}
-                    onPress={handleRegister}
-                >
-                    <Text style={{ color: "#fff", fontWeight: "bold" }}>Register</Text>
-                </TouchableOpacity>
-            </View>
+                        <TouchableOpacity
+                            style={styles.btn}
+                            onPress={handleRegister}
+                        >
+                            <Text style={{ color: "#fff", fontWeight: "bold" }}>Register</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={{ marginTop: 20, }}
+                            onPress={() => navigation.goBack()}>
+                            <Text
+                                style={{
+                                    color: "#ff3377",
+                                    fontWeight: "bold",
+                                    marginLeft: 5,
+                                }}
+                            >
+                                Login
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 }
@@ -95,7 +123,7 @@ const styles = StyleSheet.create({
     container: {
         alignItems: "center",
         alignSelf: "center",
-        marginTop: 150,
+        marginTop: 100,
         width: "88%",
         paddingVertical: 50,
         paddingHorizontal: 25,

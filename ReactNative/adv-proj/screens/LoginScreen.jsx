@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity, Alert, Image } from "react-native";
+import { StyleSheet, Text, View, Button, TextInput, Platform, TouchableOpacity, Alert, Image, ScrollView, KeyboardAvoidingView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
@@ -23,7 +23,7 @@ export default function LoginScreen() {
                 await signInWithEmailAndPassword(auth, email, password)
                 setEmail("")
                 setPassword("")
-                navigation.navigate("Home")
+                navigation.navigate("MainTabs")
             } catch (error) {
                 Alert.alert("Login Failed", error.message)
             }
@@ -31,50 +31,57 @@ export default function LoginScreen() {
     }
     return (
         <SafeAreaView style={{ backgroundColor: "#f5f7fb", flex: 1 }}>
-            <View style={styles.logo}>
-                <Image source={logo}
-                    style={styles.image} />
-                <Text style={{
-                    fontWeight: "bold",
-                    fontSize: 25,
-                }}>Chill
-                    <Text style={{ color: "#ff3377" }}>Net</Text></Text>
-            </View>
-            <View style={styles.container}>
-                <Text style={styles.title}>Welcome! Login to proceed</Text>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+            >
+                <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+                    <View style={styles.logo}>
+                        <Image source={logo}
+                            style={styles.image} />
+                        <Text style={{
+                            fontWeight: "bold",
+                            fontSize: 25,
+                        }}>Chill
+                            <Text style={{ color: "#ff3377" }}>Net</Text></Text>
+                    </View>
+                    <View style={styles.container}>
+                        <Text style={styles.title}>Welcome! Login to proceed</Text>
 
-                <TextInput
-                    value={email}
-                    onChangeText={setEmail}
-                    style={styles.box}
-                    placeholder="Enter Email Address.."
-                    placeholderTextColor="#919191"
-                />
+                        <TextInput
+                            value={email}
+                            onChangeText={setEmail}
+                            style={styles.box}
+                            placeholder="Enter Email Address.."
+                            placeholderTextColor="#919191"
+                        />
 
-                <TextInput
-                    value={password}
-                    onChangeText={setPassword}
-                    style={styles.box}
-                    placeholder="Enter Password.."
-                    placeholderTextColor="#919191"
-                    secureTextEntry
+                        <TextInput
+                            value={password}
+                            onChangeText={setPassword}
+                            style={styles.box}
+                            placeholder="Enter Password.."
+                            placeholderTextColor="#919191"
+                            secureTextEntry
 
-                />
-                <TouchableOpacity
-                    style={styles.btn}
-                    onPress={handleLogin}
-                >
-                    <Text style={{ color: "#fff", fontWeight: "bold" }}>Login</Text>
-                </TouchableOpacity>
-                <View style={{ marginBottom: 10, marginTop: 10, }}><Text>or</Text></View>
-                <TouchableOpacity
-                    style={styles.btn}
-                    onPress={() => navigation.navigate("Register")}
-                >
-                    <Text style={{ color: "#fff", fontWeight: "bold" }}>Register</Text>
-                </TouchableOpacity>
-            </View>
-        </SafeAreaView>
+                        />
+                        <TouchableOpacity
+                            style={styles.btn}
+                            onPress={handleLogin}
+                        >
+                            <Text style={{ color: "#fff", fontWeight: "bold" }}>Login</Text>
+                        </TouchableOpacity>
+                        <View style={{ marginBottom: 10, marginTop: 10, }}><Text>or</Text></View>
+                        <TouchableOpacity
+                            style={styles.btn}
+                            onPress={() => navigation.navigate("Register")}
+                        >
+                            <Text style={{ color: "#fff", fontWeight: "bold" }}>Register</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </SafeAreaView >
     );
 }
 
