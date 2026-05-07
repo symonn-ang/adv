@@ -61,6 +61,9 @@ const PostFeed = ({ userData }) => {
                 userId: user.uid,
                 userEmail: user.email,
                 userPhotoURL: userData?.photoURL || null,
+                likeCount: 0,
+                likedBy: [],           // array of user uids
+                commentCount: 0,       // we'll increment this later
             });
 
             setPost("");
@@ -175,7 +178,7 @@ const styles = StyleSheet.create({
         padding: 14,
         minHeight: 110,
         textAlignVertical: "top",
-
+        borderRadius: 5,
         backgroundColor: "#f7f8fa",
 
         fontSize: 15,

@@ -10,9 +10,24 @@ import {
   TextInput,
   Modal,
 } from "react-native";
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { auth, db } from '../firebase/firebaseConfig'
-import { doc, deleteDoc, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  deleteDoc,
+  updateDoc,
+  collection,
+  addDoc,
+  // updateDoc,
+  // as updateDocAgain
+  serverTimestamp,
+  onSnapshot,
+  query,
+  orderBy,
+  increment,
+  arrayUnion,
+  arrayRemove
+} from "firebase/firestore";
 import Feather from '@expo/vector-icons/Feather';
 import rockImage from "../assets/ic_profile.png"
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -24,23 +39,142 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import * as ImagePicker from "expo-image-picker";
 import { getTimeAgo } from "../hooks/timeAgo";
 
-const Posts = ({ post }) => {
+const Posts = ({ post, currentUserPhoto }) => {
 
   const currentUser = auth.currentUser;
   const date = getTimeAgo(post.createdAt);
 
-  const [isEditing, setIsEditing] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
-
-  const [isComment, setIsComment] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(post.likeCount || 0);
+  const [commentCount, setCommentCount] = useState(post.commentCount || 0);
 
+
+  const [modalVisible, setModalVisible] = useState(false);
   const [editedText, setEditedText] = useState(post.text);
   const [editedImage, setEditedImage] = useState(post.image || null);
 
-  const [modalVisible, setModalVisible] = useState(false);
+  const [commentModalVisible, setCommentModalVisible] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [newCommentText, setNewCommentText] = useState("");
+  const [editingComment, setEditingComment] = useState(null); // for editing comment
+
 
   const isOwner = currentUser?.uid === post.userId;
+
+  // ==================== for likes ====================
+  useEffect(() => {
+    if (post.likedBy && currentUser?.uid) {
+      setIsLiked(post.likedBy.includes(currentUser.uid));
+    }
+  }, [post.likedBy, currentUser]);
+
+  const handleLike = async () => {
+    if (!currentUser) return;
+
+    const postRef = doc(db, "posts", post.id);
+
+    try {
+      if (isLiked) {
+        // Unlike
+        await updateDoc(postRef, {
+          likeCount: increment(-1),
+          likedBy: arrayRemove(currentUser.uid),
+        });
+        setLikeCount(prev => Math.max(0, prev - 1));
+      } else {
+        // Like
+        await updateDoc(postRef, {
+          likeCount: increment(1),
+          likedBy: arrayUnion(currentUser.uid),
+        });
+        setLikeCount(prev => prev + 1);
+      }
+      setIsLiked(!isLiked);
+    } catch (error) {
+      console.error("Like error:", error);
+      Alert.alert("Error", "Failed to like post");
+    }
+  };
+
+  // ==================== for comments ====================
+  useEffect(() => {
+    if (!commentModalVisible) return;
+
+    const commentsRef = collection(db, "posts", post.id, "comments");
+    const q = query(commentsRef, orderBy("createdAt", "desc"));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setComments(data);
+      setCommentCount(data.length);
+    });
+
+    return () => unsubscribe();
+  }, [commentModalVisible, post.id]);
+
+  const handleAddComment = async () => {
+    if (!newCommentText.trim() || !currentUser) return;
+
+    try {
+      await addDoc(collection(db, "posts", post.id, "comments"), {
+        text: newCommentText.trim(),
+        userId: currentUser.uid,
+        userEmail: currentUser.email,
+        // userPhotoURL: post.userPhotoURL || currentUser.photoURL || null, prop nln
+        userPhotoURL: currentUserPhoto || currentUser.photoURL || null,
+        createdAt: serverTimestamp(),
+      });
+
+      await updateDoc(doc(db, "posts", post.id), {
+        commentCount: increment(1),
+      });
+
+      setNewCommentText("");
+    } catch (error) {
+      console.error("Comment error:", error);
+      Alert.alert("Error", "Failed to post comment");
+    }
+  };
+
+  const handleEditComment = async (commentId) => {
+    if (!editingComment || !editingComment.text.trim()) return;
+
+    try {
+      await updateDoc(doc(db, "posts", post.id, "comments", commentId), {
+        text: editingComment.text,
+        edited: true,           // optional: mark as edited
+      });
+
+      setEditingComment(null);   // exit edit mode
+      setNewCommentText("");     // clear input
+    } catch (error) {
+      console.error("Edit comment error:", error);
+      Alert.alert("Error", "Failed to edit comment");
+    }
+  };
+
+  // Delete Comment
+  const handleDeleteComment = (commentId) => {
+    Alert.alert("Delete Comment", "Are you sure?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await deleteDoc(doc(db, "posts", post.id, "comments", commentId));
+            await updateDoc(doc(db, "posts", post.id), {
+              commentCount: increment(-1),
+            });
+          } catch (error) {
+            Alert.alert("Error", "Failed to delete comment");
+          }
+        },
+      },
+    ]);
+  };
+
 
   const pickEditImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -170,38 +304,36 @@ const Posts = ({ post }) => {
 
 
       <View style={{
-        marginLeft: "20%",
-        maxWidth: 280,
+        marginLeft: "14%",
+        maxWidth: 325,
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
         marginTop: 10,
 
       }}>
-        <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", }}>
-          <Feather name="message-circle" size={18} color="#818181" />
-          <Text style={{ color: "#818181", marginLeft: 2, }}>
-            {isComment ? (
-              10
-            ) : (
-              0
-            )}
-          </Text>
+        {/* Comment Button */}
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => setCommentModalVisible(true)}
+        >
+          <Feather name="message-circle" size={20} color="#818181" />
+          <Text style={styles.actionText}>{commentCount}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", }}>
+
+        {/* Like Button */}
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={handleLike}
+        >
           {isLiked ? (
-            <AntDesign name="heart" size={18} color="#E0245E" />
+            <AntDesign name="heart" size={20} color="#E0245E" />
           ) : (
-            <Feather name="heart" size={18} color="#818181" />
+            <Feather name="heart" size={20} color="#818181" />
           )}
-          <Text style={{ color: "#818181", marginLeft: 2, }}>
-            {isComment ? (
-              10
-            ) : (
-              0
-            )}
-          </Text>
+          <Text style={styles.actionText}>{likeCount}</Text>
         </TouchableOpacity>
+
 
         <TouchableOpacity
           disabled={!isOwner}
@@ -238,6 +370,8 @@ const Posts = ({ post }) => {
       </View>
 
       {/* >>>>>>>>>>>>>>>>>>>>>>>>> Modal start here <<<<<<<<<<<<<<<<<<<<<<<<< */}
+
+      {/* >>>>>>>>>>>>>>>>>>>>>>>>> edit modal <<<<<<<<<<<<<<<<<<<<<<<<< */}
 
       <Modal
         visible={modalVisible}
@@ -407,6 +541,105 @@ const Posts = ({ post }) => {
           </View>
         </View>
       </Modal>
+
+      {/* ==================== COMMENTS MODAL ==================== */}
+      {/* ==================== COMMENTS MODAL ==================== */}
+      <Modal
+        visible={commentModalVisible}
+        transparent
+        animationType="slide"
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.commentsModal}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Comments ({comments.length})</Text>
+              <TouchableOpacity onPress={() => setCommentModalVisible(false)}>
+                <Text style={{ fontSize: 24 }}>×</Text>
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.commentsList}>
+              {comments.length === 0 ? (
+                <Text style={{ textAlign: "center", color: "#888", marginTop: 40 }}>
+                  No comments yet. Be the first!
+                </Text>
+              ) : (
+                comments.map(comment => (
+                  <View key={comment.id} style={styles.commentItem}>
+                    <Image
+                      source={comment.userPhotoURL ? { uri: comment.userPhotoURL } : rockImage}
+                      style={styles.commentAvatar}
+                    />
+                    <View style={{ flex: 1 }}>
+                      <View style={{ flexDirection: "row", alignItems: "center" }}>
+                        <Text style={{ fontWeight: "600" }}>
+                          {comment.userEmail?.split("@")[0]}
+                        </Text>
+                        {comment.edited && (
+                          <Text style={{ fontSize: 12, color: "#818181", marginLeft: 5, }}>(Edited)</Text>
+                        )}
+                      </View>
+                      <Text>{comment.text}</Text>
+
+                      {/* Show Edit & Delete only for comment owner */}
+                      {currentUser?.uid === comment.userId && (
+                        <View style={{ flexDirection: "row", marginTop: 6, gap: 15 }}>
+                          <TouchableOpacity onPress={() => setEditingComment(comment)}>
+                            <Text style={{ color: "#ff3377", fontSize: 13, fontWeight: "600" }}>Edit</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity onPress={() => handleDeleteComment(comment.id)}>
+                            <Text style={{ color: "red", fontSize: 13, fontWeight: "600" }}>Delete</Text>
+                          </TouchableOpacity>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                ))
+              )}
+            </ScrollView>
+
+            {/* Comment Input */}
+            <View style={styles.commentInputContainer}>
+              <TextInput
+                value={editingComment ? editingComment.text : newCommentText}
+                onChangeText={(text) => {
+                  if (editingComment) {
+                    setEditingComment({ ...editingComment, text });
+                  } else {
+                    setNewCommentText(text);
+                  }
+                }}
+                placeholder={editingComment ? "Edit comment..." : "Write a comment..."}
+                multiline
+                style={styles.commentInput}
+              />
+
+              <View style={{ flexDirection: 'row', gap: 12 }}>
+                {editingComment && (
+                  <TouchableOpacity onPress={() => setEditingComment(null)}>
+                    <Text style={{ color: "#666", fontWeight: "600" }}>Cancel</Text>
+                  </TouchableOpacity>
+                )}
+
+                <TouchableOpacity
+                  onPress={() => {
+                    if (editingComment) {
+                      handleEditComment(editingComment.id);
+                    } else {
+                      handleAddComment();
+                    }
+                  }}
+                >
+                  <Text style={{ color: "#ff3377", fontWeight: "bold" }}>
+                    {editingComment ? "Save" : "Send"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
     </View>
 
 
@@ -460,6 +693,69 @@ const styles = StyleSheet.create({
     marginTop: 6,
     width: "100%",
     textAlignVertical: "top"
+  },
+
+  actionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  actionText: {
+    marginLeft: 6,
+    color: "#818181",
+    fontWeight: "500",
+  },
+  // commentsz
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "flex-end",
+  },
+  commentsModal: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    height: "75%",
+    padding: 15,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 15,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  commentsList: {
+    flex: 1,
+  },
+  commentItem: {
+    flexDirection: "row",
+    marginBottom: 15,
+  },
+  commentAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  commentInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
+    paddingTop: 10,
+  },
+  commentInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    marginRight: 10,
+    maxHeight: 100,
   },
 
 })

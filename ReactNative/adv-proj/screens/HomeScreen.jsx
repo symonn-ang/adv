@@ -154,6 +154,7 @@ export default function HomeScreen() {
                             key={item.id}
                             post={item}
                             userData={userData}
+                            currentUserPhoto={userData?.photoURL}
                         />
                     ))}
 

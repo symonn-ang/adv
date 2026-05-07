@@ -94,7 +94,11 @@ export default function FeedScreen() {
 
                     <PostFeed userData={userData} />
                     {posts.map((item) => (
-                        <Posts key={item.id} post={item} />
+                        <Posts 
+                            key={item.id} 
+                            post={item} 
+                            currentUserPhoto={userData?.photoURL}
+                        />
                     ))}
 
                     <Text style={{ marginTop: 10, color: "#646464", fontSize: 20, fontWeight: "700" }}>. . .</Text>
