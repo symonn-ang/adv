@@ -11,7 +11,6 @@ import logo from "../assets/logo.png"
 export default function RegisterScreen() {
     const navigation = useNavigation();
 
-    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -38,6 +37,7 @@ export default function RegisterScreen() {
                 await setDoc(doc(db, "users", user.uid), {
                     email: user.email,
                     createdAt: new Date(),
+                    photoURL: null,
                 });
 
                 Alert.alert("Success", "Account Created!");
@@ -60,13 +60,6 @@ export default function RegisterScreen() {
                             style={styles.image} />
                         <Text style={styles.title}>Create your account</Text>
 
-                        <TextInput
-                            value={username}
-                            onChangeText={setUsername}
-                            style={styles.box}
-                            placeholder="Enter Username.."
-                            placeholderTextColor="#919191"
-                        />
                         <TextInput
                             value={email}
                             onChangeText={setEmail}

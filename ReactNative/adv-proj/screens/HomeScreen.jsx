@@ -2,14 +2,18 @@ import { StyleSheet, Text, View, Button, Image, TouchableOpacity, ScrollView } f
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import rockImage from "../assets/the-rock-turtleneck.avif"
+import rockImage from "../assets/ic_profile.png"
 import { auth, db } from "../firebase/firebaseConfig";
 import { useEffect, useState } from "react";
-import { getDoc, doc, collection, query, where, onSnapshot, orderBy } from "firebase/firestore";
+import { getDoc, doc, collection, query, where, onSnapshot, orderBy, updateDoc } from "firebase/firestore";
+import * as ImagePicker from "expo-image-picker";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 import Posts from "../components/Posts"
 import PostFeed from "../components/PostFeed"
 import { onAuthStateChanged } from "firebase/auth";
+
+
 
 export default function HomeScreen() {
     const navigation = useNavigation();
@@ -66,34 +70,69 @@ export default function HomeScreen() {
         return unsubscribe;
     }, [currentUser]);
 
+    const pickProfileImage = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 0.7,
+        });
+
+        if (!result.canceled) {
+            const imageUri = result.assets[0].uri;
+
+            try {
+                const userRef = doc(db, "users", currentUser.uid);
+
+                await updateDoc(userRef, {
+                    photoURL: imageUri,
+                });
+
+                // update UI immediately
+                setUserData((prev) => ({
+                    ...prev,
+                    photoURL: imageUri,
+                }));
+
+            } catch (error) {
+                console.log("Update profile error:", error);
+            }
+        }
+    };
+
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-
-                <TouchableOpacity
-                    style={styles.btn}
-                    onPress={() => navigation.popToTop()}
-                >
-                    <Text style={{ color: "#fff", fontWeight: "bold" }}>Log Out</Text>
-                </TouchableOpacity>
+            <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
 
                 <View style={{ alignItems: "center" }}>
                     <Text style={styles.title}>Welcome Home</Text>
                     <Text style={{ fontWeight: "bold", fontSize: 20 }}>{currentUser?.email?.split("@")[0]}!</Text>
-                    <Text>  Created at: {userData?.createdAt
-                        ? userData.createdAt.toDate().toLocaleDateString()
-                        : "Loading..."}</Text>
+                    <View style={{ flexDirection: "row", alignItems: "center" }}>
+                        <FontAwesome name="calendar" size={16} color="#646464" />
+                        <Text style={{ color: "#646464", marginLeft: 10, }}>Joined {userData?.createdAt
+                            ? userData.createdAt.toDate().toLocaleDateString()
+                            : "Loading..."}</Text>
+                    </View>
+
                     <View style={styles.heroSection}>
-                        <Image source={rockImage}
-                            style={styles.image} />
+                        <Image
+                            source={
+                                userData?.photoURL
+                                    ? { uri: userData.photoURL }
+                                    : rockImage
+                            }
+                            style={styles.image}
+                        />
                         <View style={{ marginTop: 10, }}></View>
 
                         <View style={styles.subSection}>
                             <TouchableOpacity
                                 style={styles.btn}
-                                onPress={() => navigation.navigate("Profile")}
+                                onPress={pickProfileImage}
                             >
-                                <Text style={{ color: "#fff", fontWeight: "bold" }}>Visit Profile</Text>
+                                <Text style={{ color: "#fff", fontWeight: "bold" }}>
+                                    Edit Profile
+                                </Text>
                             </TouchableOpacity>
                             <View style={{ marginTop: 10 }}></View>
                             <TouchableOpacity
@@ -109,10 +148,16 @@ export default function HomeScreen() {
                         <Text style={{ fontWeight: "bold", fontSize: 20, marginTop: 20, }}>Today's Blog~</Text>
                     </View>
 
-                    <PostFeed />
+                    <PostFeed userData={userData} />
                     {posts.map((item) => (
-                        <Posts key={item.id} post={item} />
+                        <Posts
+                            key={item.id}
+                            post={item}
+                            userData={userData}
+                        />
                     ))}
+
+                    <Text style={{ marginTop: 10, color: "#646464", fontSize: 20, fontWeight: "700" }}>. . .</Text>
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -138,7 +183,7 @@ const styles = StyleSheet.create({
     btn: {
         width: 100,
         padding: 10,
-        backgroundColor: "#b777c7",
+        backgroundColor: "#ff3377",
         alignItems: "center",
         borderColor: "#000",
         borderWidth: 2,

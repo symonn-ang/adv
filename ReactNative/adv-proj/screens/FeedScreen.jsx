@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button, Image, TouchableOpacity, ScrollView } from "react-native";
+import { StyleSheet, Text, View, Button, TouchableOpacity, ScrollView, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -10,6 +10,9 @@ import { getDoc, doc, collection, query, where, onSnapshot, orderBy } from "fire
 import Posts from "../components/Posts"
 import PostFeed from "../components/PostFeed"
 import { onAuthStateChanged } from "firebase/auth";
+
+import Entypo from '@expo/vector-icons/Entypo';
+import logo from "../assets/logo.png"
 
 export default function FeedScreen() {
     const navigation = useNavigation();
@@ -68,19 +71,34 @@ export default function FeedScreen() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+            <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
 
-                <View style={{ alignItems: "center" }}>
+                <View style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    paddingHorizontal: 4,
+                    paddingVertical: 3,
+                }}>
+                    <Image source={logo}
+                        style={styles.image} />
                     <Text style={styles.title}>Home</Text>
+                    <TouchableOpacity
+                        onPress={() => navigation.popToTop()}
+                    >
+                        <Entypo name="log-out" size={32} color="black" />
+                    </TouchableOpacity>
+                </View>
 
-                    <View>
-                        <Text style={{ fontWeight: "bold", fontSize: 20, marginTop: 20, }}>Today's Blog~</Text>
-                    </View>
+                <View style={{ alignItems: "center", marginTop: 30, }}>
 
-                    <PostFeed />
+                    <PostFeed userData={userData} />
                     {posts.map((item) => (
                         <Posts key={item.id} post={item} />
                     ))}
+
+                    <Text style={{ marginTop: 10, color: "#646464", fontSize: 20, fontWeight: "700" }}>. . .</Text>
+
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -98,10 +116,9 @@ const styles = StyleSheet.create({
         color: "#333",
     },
     image: {
-        width: 100,
-        height: 100,
-        borderWidth: 2,
-        borderRadius: 100,
+        width: 40,
+        height: 40,
+        resizeMode: "contain",
     },
     btn: {
         width: 100,

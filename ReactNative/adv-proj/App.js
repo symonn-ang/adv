@@ -43,7 +43,7 @@ function TabNavigator() {
         options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons
-              name={focused ? "home" : "home-outline"}
+              name={focused ? "person" : "person-outline"}
               size={26}
               color={focused ? "#ff3377" : "#999"}
             />
@@ -57,7 +57,7 @@ function TabNavigator() {
         options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons
-              name={focused ? "person" : "person-outline"}
+              name={focused ? "home" : "home-outline"}
               size={26}
               color={focused ? "#ff3377" : "#999"}
             />
