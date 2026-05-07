@@ -571,13 +571,23 @@ const Posts = ({ post, currentUserPhoto }) => {
                       style={styles.commentAvatar}
                     />
                     <View style={{ flex: 1 }}>
-                      <View style={{ flexDirection: "row", alignItems: "center" }}>
-                        <Text style={{ fontWeight: "600" }}>
-                          {comment.userEmail?.split("@")[0]}
+                      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                        <View style={{ flexDirection: "row", }}>
+
+                          <Text style={{ fontWeight: "600" }}>
+                            {comment.userEmail?.split("@")[0]}
+                          </Text>
+                          <Text style={{ color: "#818181", marginLeft: 3, }}>
+                            {comment.userEmail}
+                          </Text>
+                          {comment.edited && (
+                            <Text style={{ fontSize: 12, color: "#818181", marginLeft: 5, }}>(Edited)</Text>
+                          )}
+                        </View>
+
+                        <Text style={{ fontSize: 12, color: "#818181" }}>
+                          {getTimeAgo(comment.createdAt)}
                         </Text>
-                        {comment.edited && (
-                          <Text style={{ fontSize: 12, color: "#818181", marginLeft: 5, }}>(Edited)</Text>
-                        )}
                       </View>
                       <Text>{comment.text}</Text>
 
