@@ -543,14 +543,20 @@ const Posts = ({ post, currentUserPhoto }) => {
       </Modal>
 
       {/* ==================== COMMENTS MODAL ==================== */}
-      {/* ==================== COMMENTS MODAL ==================== */}
       <Modal
         visible={commentModalVisible}
         transparent
         animationType="slide"
+        onRequestClose={() => setCommentModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
+          <TouchableOpacity // lisod so kani ra sa, swipe down (supposedly)
+            style={{ flex: 1 }}
+            activeOpacity={1}
+            onPress={() => setCommentModalVisible(false)}
+          />
           <View style={styles.commentsModal}>
+            <View style={styles.swipeIndicator} />
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Comments ({comments.length})</Text>
               <TouchableOpacity onPress={() => setCommentModalVisible(false)}>
@@ -591,7 +597,6 @@ const Posts = ({ post, currentUserPhoto }) => {
                       </View>
                       <Text>{comment.text}</Text>
 
-                      {/* Show Edit & Delete only for comment owner */}
                       {currentUser?.uid === comment.userId && (
                         <View style={{ flexDirection: "row", marginTop: 6, gap: 15 }}>
                           <TouchableOpacity onPress={() => setEditingComment(comment)}>
@@ -608,7 +613,6 @@ const Posts = ({ post, currentUserPhoto }) => {
               )}
             </ScrollView>
 
-            {/* Comment Input */}
             <View style={styles.commentInputContainer}>
               <TextInput
                 value={editingComment ? editingComment.text : newCommentText}
@@ -700,7 +704,7 @@ const styles = StyleSheet.create({
   },
 
   botSection: {
-    marginTop: 6,
+    marginTop: 2,
     width: "100%",
     textAlignVertical: "top"
   },
@@ -742,7 +746,11 @@ const styles = StyleSheet.create({
   },
   commentItem: {
     flexDirection: "row",
-    marginBottom: 15,
+    paddingTop: 20,
+    paddingBottom: 20,
+    borderTopWidth: 0.5,
+    borderColor: "#818181",
+    width: "100%",
   },
   commentAvatar: {
     width: 40,
@@ -766,6 +774,15 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     marginRight: 10,
     maxHeight: 100,
+  },
+  swipeIndicator: { // lisod
+    width: 40,
+    height: 5,
+    backgroundColor: "#ccc",
+    borderRadius: 10,
+    alignSelf: "center",
+    marginTop: 8,
+    marginBottom: 10,
   },
 
 })

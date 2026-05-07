@@ -88,7 +88,7 @@ export default function HomeScreen() {
                     photoURL: imageUri,
                 });
 
-                // update UI immediately
+                // same as snapshot for profpic only
                 setUserData((prev) => ({
                     ...prev,
                     photoURL: imageUri,
