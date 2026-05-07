@@ -13,7 +13,7 @@ export default function ProfileScreen() {
     const currentUser = auth.currentUser
 
     return (
-        <SafeAreaView style={{ backgroundColor: "#f4f1e7", flex: 1 }}>
+        <SafeAreaView style={{ backgroundColor: "#f5f7fb", flex: 1 }}>
             <View style={styles.container}>
                 <Image source={icon}
                     style={styles.pic} />
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     btn: {
         width: 120,
         padding: 10,
-        backgroundColor: "#b777c7",
+        backgroundColor: "#ff3377",
         alignItems: "center",
         borderColor: "#000",
         borderWidth: 2,

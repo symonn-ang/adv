@@ -1,10 +1,12 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from "react-native";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
 import { auth, db } from "../firebase/firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+
+import logo from "../assets/logo.png"
 
 export default function RegisterScreen() {
     const navigation = useNavigation();
@@ -46,9 +48,11 @@ export default function RegisterScreen() {
     }
 
     return (
-        <SafeAreaView style={{ backgroundColor: "#f4f1e7", flex: 1 }}>
+        <SafeAreaView style={{ backgroundColor: "#f5f7fb", flex: 1 }}>
             <View style={styles.container}>
-                <Text style={styles.title}>Register Here</Text>
+                <Image source={logo}
+                    style={styles.image} />
+                <Text style={styles.title}>Create your account</Text>
 
                 <TextInput
                     value={email}
@@ -91,35 +95,58 @@ const styles = StyleSheet.create({
     container: {
         alignItems: "center",
         alignSelf: "center",
-        marginTop: 60,
-        borderWidth: 2,
-        borderRadius: 40,
-        backgroundColor: "rgba(245, 244, 244, 0.8)",
-        width: "85%",
-        paddingTop: 50,
-        paddingBottom: 50,
+        marginTop: 150,
+        width: "88%",
+        paddingVertical: 50,
+        paddingHorizontal: 25,
+        backgroundColor: "#ffffff",
+        borderRadius: 20,
+
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 8,
+        },
+        shadowOpacity: 0.12,
+        shadowRadius: 18,
+        elevation: 10,
+    },
+    image: {
+        width: 50,
+        height: 50,
+        resizeMode: "contain",
+        alignSelf: "center",
+        marginLeft: 20,
+        marginBottom: 10,
     },
     title: {
         fontSize: 24,
         fontWeight: "bold",
-        color: "#333",
-        marginBottom: 20,
+        color: "#1f1f1f",
+        marginBottom: 28,
+        textAlign: "center",
+        letterSpacing: 0.3,
     },
     box: {
-        borderWidth: 2,
-        borderColor: "#000",
-        borderRadius: 10,
-        width: 200,
-        padding: 10,
-        marginBottom: 10,
+        width: "100%",
+        backgroundColor: "#f7f7f7",
+        borderRadius: 16,
+        paddingVertical: 14,
+        paddingHorizontal: 18,
+        marginBottom: 16,
+        fontSize: 15,
+        color: "#222",
+
+        borderWidth: 1,
+        borderColor: "#e5e5e5",
     },
     btn: {
-        width: 100,
-        padding: 10,
-        backgroundColor: "#b777c7",
+        width: "100%",
+        padding: 15,
+        backgroundColor: "#ff3377",
         alignItems: "center",
         borderColor: "#000",
-        borderWidth: 2,
+        borderWidth: 1,
         borderRadius: 10,
     },
 });

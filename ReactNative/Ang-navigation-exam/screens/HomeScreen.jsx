@@ -46,7 +46,7 @@ export default function HomeScreen() {
 
         const q = query(
             collection(db, "posts"),
-            where("userId", "==", currentUser.uid),
+            // where("userId", "==", currentUser.uid),
             orderBy("createdAt", "desc")
         );
 
@@ -65,10 +65,18 @@ export default function HomeScreen() {
 
         return unsubscribe;
     }, [currentUser]);
-    
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+
+                <TouchableOpacity
+                    style={styles.btn}
+                    onPress={() => navigation.popToTop()}
+                >
+                    <Text style={{ color: "#fff", fontWeight: "bold" }}>Log Out</Text>
+                </TouchableOpacity>
+
                 <View style={{ alignItems: "center" }}>
                     <Text style={styles.title}>Welcome Home</Text>
                     <Text style={{ fontWeight: "bold", fontSize: 20 }}>{currentUser?.email?.split("@")[0]}!</Text>
@@ -114,7 +122,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#f4f1e7",
+        backgroundColor: "#f5f7fb",
     },
     title: {
         fontSize: 24,
