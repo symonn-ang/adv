@@ -143,18 +143,17 @@ const Posts = ({ post, currentUserPhoto }) => {
     try {
       await updateDoc(doc(db, "posts", post.id, "comments", commentId), {
         text: editingComment.text,
-        edited: true,           // optional: mark as edited
+        edited: true,           // for da string on right
       });
 
-      setEditingComment(null);   // exit edit mode
-      setNewCommentText("");     // clear input
+      setEditingComment(null);
+      setNewCommentText("");
     } catch (error) {
       console.error("Edit comment error:", error);
       Alert.alert("Error", "Failed to edit comment");
     }
   };
 
-  // Delete Comment
   const handleDeleteComment = (commentId) => {
     Alert.alert("Delete Comment", "Are you sure?", [
       { text: "Cancel", style: "cancel" },

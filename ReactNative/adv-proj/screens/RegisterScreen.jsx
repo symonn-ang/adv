@@ -26,7 +26,7 @@ export default function RegisterScreen() {
             return;
         }
         else if (password.length < 6) {
-            Alert.alert("Password must at least 6 characters long")
+            Alert.alert("Password must be at least 6 characters long")
             return;
         }
         else {

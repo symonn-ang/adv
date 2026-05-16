@@ -62,8 +62,8 @@ const PostFeed = ({ userData }) => {
                 userEmail: user.email,
                 userPhotoURL: userData?.photoURL || null,
                 likeCount: 0,
-                likedBy: [],           // array of user uids
-                commentCount: 0,       // we'll increment this later
+                likedBy: [],
+                commentCount: 0,
             });
 
             setPost("");
